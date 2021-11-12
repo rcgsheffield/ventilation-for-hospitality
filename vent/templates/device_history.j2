@@ -1,0 +1,13 @@
+query {{ '{' }}
+  allDevices(inWorkspace: "{{ datacake_workspace_id }}") {{ '{' }}
+    id
+    verboseName
+    serialNumber
+    history(
+      fields: {{ fields }}
+      timerangestart: "{{ time_range_start }}"
+      timerangeend: "{{ time_range_end }}"
+      resolution: "raw"
+    )
+  {{ '}' }}
+{{ '}' }}

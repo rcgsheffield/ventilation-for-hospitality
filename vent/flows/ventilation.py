@@ -1,15 +1,15 @@
 """
-Ventilation for hospitality workflow
+Ventilation for Hospitality workflow
 """
 
 import pathlib
 
 import prefect
 import requests
-import jinja2
 
 import vent.tasks.graphql_task
-import vent.settings
+import vent.utils
+
 
 #
 # @prefect.task
@@ -43,9 +43,6 @@ import vent.settings
 #
 
 
-path = pathlib.Path('./vent/templates/all_devices.j2')
-
-
 @prefect.task
 def save_raw_data(raw_data):
     logger = prefect.context.get('logger')
@@ -66,19 +63,27 @@ def save_devices_raw_data(devices: requests.Response):
 
 # Define workflow
 with prefect.Flow('ventilation') as flow:
-    # Create GraphQL query
-    with path.open() as file:
-        template = jinja2.Template(file.read())
-    query = template.render(datacake_workspace_id='sadas')
+    # Parameters
+    workspace_id = prefect.Parameter('workspace_id')
+    url = prefect.Parameter('url')
+    fields = prefect.Parameter('fields')
 
     # Create HTTP session to datacake
     with requests.Session() as session:
+        # Create GraphQL query
+        device_query = vent.utils.render_template(
+            './vent/templates/all_devices.j2',
+            workspace_id=workspace_id)
+
         # Download device metadata from Datacake
         get_datacake_devices = vent.tasks.graphql_task.GraphqlHttpTask(
-            query=query, url=vent.settings.GRAPHQL_URL, session=session)
+            query=device_query, url=url, session=session)
 
         # devices_data = get_datacake_devices.run()  # type: requests.Response
         save_devices_raw_data(get_datacake_devices)
+
+        data_query = vent.utils.render_template(
+            './vent/templates/device_history.j2', )
     # # Download datacake data
     # raw_data = extract_datacake_data()
     #

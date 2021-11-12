@@ -1,2 +1,9 @@
+# Development environment to mock the VM
 services:
   vent:
+    build:
+      context: .
+      dockerfile: ./vent/Dockerfile
+    env_file: .env
+    volumes:
+      - ./vent:/opt/vent/vent

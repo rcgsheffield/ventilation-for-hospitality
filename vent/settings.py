@@ -1,3 +1,6 @@
 import os
 
-GRAPHQL_URL = os.getenv('GRAPHQL_URL', 'https://api.datacake.co/graphql/')
+# Datacake options
+URL = os.getenv('URL', 'https://api.datacake.co/graphql/')
+WORKSPACE_ID = os.environ['WORKSPACE_ID']
+FIELDS = os.environ['FIELDS']
