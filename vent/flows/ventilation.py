@@ -52,7 +52,7 @@ def save_raw_data(raw_data):
 
     with pathlib.Path('raw_data.txt').open('w') as file:
         file.write(raw_data)
-        logger.debug(f'Wrote {file.name}')
+        logger.info(f'Wrote "{file.name}"')
 
 
 @prefect.task
@@ -61,7 +61,7 @@ def save_devices_raw_data(devices: requests.Response):
 
     with pathlib.Path('devices.json').open('w') as file:
         file.write(devices.text)
-        logger.debug(f'Wrote {file.name}')
+        logger.info(f'Wrote "{file.name}"')
 
 
 # Define workflow
@@ -77,7 +77,7 @@ with prefect.Flow('ventilation') as flow:
         get_datacake_devices = vent.tasks.graphql_task.GraphqlHttpTask(
             query=query, url=vent.settings.GRAPHQL_URL, session=session)
 
-        #devices_data = get_datacake_devices.run()  # type: requests.Response
+        # devices_data = get_datacake_devices.run()  # type: requests.Response
         save_devices_raw_data(get_datacake_devices)
     # # Download datacake data
     # raw_data = extract_datacake_data()

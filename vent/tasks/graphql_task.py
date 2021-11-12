@@ -15,4 +15,5 @@ class GraphqlHttpTask(vent.tasks.http_task.HttpTask):
         return dict(query=self.query)
 
     def run(self):
+        self.request_kwargs.update(dict(json=self.json))
         return super().run()

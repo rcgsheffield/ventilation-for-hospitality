@@ -4,22 +4,24 @@ import requests
 
 class HttpTask(prefect.Task):
     """
-    HTTP request tasks
+    HTTP request task
 
     Docs: Subclassing the Task class
     https://docs.prefect.io/core/advanced_tutorials/task-guide.html#subclassing-the-task-class
     """
 
     def __init__(self, url: str, session: requests.Session = None,
-                 method: str = None, **kwargs):
+                 method: str = None, request_kwargs: dict = None, **kwargs):
         self.url = url
         self.method = method or 'GET'
         self.session = session
+        self.request_kwargs = request_kwargs or dict()
         super().__init__(**kwargs)
 
     def run(self) -> requests.Response:
         session = self.session or requests.Session()
-        response = session.request(method=self.method, url=self.url)
+        response = session.request(method=self.method, url=self.url,
+                                   **self.request_kwargs)
         self.logger.info(f"HTTP {response.status_code} {response.url}")
         try:
             response.raise_for_status()
