@@ -1,0 +1,32 @@
+query {{ '{' }}
+  allDevices(inWorkspace: "{{ var.value.datacake_workspace_id }}") {{ '{' }}
+    id
+    serialNumber
+    verboseName
+    location
+    lastHeard
+    tags
+    metadata
+    softwareVersion
+    claimed
+    claimCode
+    online
+    ttnDevId
+    internalId
+    isKemperDevice
+    product {{ '{' }}
+      id
+      name
+      slug
+    {{ '}' }}
+    currentMeasurements(allActiveFields:true) {{ '{' }}
+      field {{ '{' }}
+        id
+        fieldName
+        verboseFieldName
+        unit
+        description
+      {{ '}' }}
+    {{ '}' }}
+  {{ '}' }}
+{{ '}' }}
