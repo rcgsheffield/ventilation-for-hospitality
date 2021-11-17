@@ -1,92 +1,60 @@
 """
 Ventilation for Hospitality workflow
 """
-
 import pathlib
+from typing import Union
 
-import prefect
+import prefect.tasks.secrets
 import requests
 
-import vent.tasks.graphql_task
 import vent.utils
 
 
-#
-# @prefect.task
-# def get_datacake_devices():
-#     logger = prefect.context.get('logger')
-#     logger.debug('get_datacake_devices')
-#
-#
-# @prefect.task
-# def extract_datacake_data():
-#     logger = prefect.context.get('logger')
-#     logger.debug('extract_datacake_data')
-#
-#
-# @prefect.task
-# def get_deployments():
-#     logger = prefect.context.get('logger')
-#     logger.debug('get_deployments')
-#
-#
-# @prefect.task
-# def transform(deployments, raw_data, devices):
-#     logger = prefect.context.get('logger')
-#     logger.debug('transform')
-#
-#
-# @prefect.task
-# def load_clean_data(clean_data):
-#     logger = prefect.context.get('logger')
-#     logger.debug('load_clean_data')
-#
-
-
 @prefect.task
-def save_raw_data(raw_data):
+def serialise(path: Union[str, pathlib.Path], data: str, mode: str = 'w'):
+    path = pathlib.Path(path)
     logger = prefect.context.get('logger')
 
-    with pathlib.Path('raw_data.txt').open('w') as file:
-        file.write(raw_data)
+    with path.open(mode) as file:
+        file.write(data)
         logger.info(f'Wrote "{file.name}"')
 
 
 @prefect.task
-def save_devices_raw_data(devices: requests.Response):
-    logger = prefect.context.get('logger')
-
-    with pathlib.Path('devices.json').open('w') as file:
-        file.write(devices.text)
-        logger.info(f'Wrote "{file.name}"')
+def graphql_get(url: str, token: str, query: str, **kwargs) -> str:
+    session = requests.Session()
+    session.headers.update({'Authorization': f'Token {token}'})
+    response = session.get(url, json=dict(query=query), **kwargs)
+    try:
+        response.raise_for_status()
+    except requests.HTTPError:
+        logger = prefect.context.get('logger')
+        logger.error(response.request.body)
+        logger.error(response.text)
+        raise
+    return response.text
 
 
 # Define workflow
 with prefect.Flow('ventilation') as flow:
-    # Parameters
-    workspace_id = prefect.Parameter('workspace_id')
+    # Define parameters
     url = prefect.Parameter('url')
-    fields = prefect.Parameter('fields')
+    workspace_id = prefect.Parameter('workspace_id')()
+    fields = prefect.Parameter('fields')()
+    token = prefect.tasks.secrets.PrefectSecret('DATACAKE_TOKEN')
 
-    # Create HTTP session to datacake
-    with requests.Session() as session:
-        # Create GraphQL query
-        device_query = vent.utils.render_template(
-            './vent/templates/all_devices.j2',
-            workspace_id=workspace_id)
+    # Download device metadata from Datacake
+    device_query = vent.utils.render_template(
+        './vent/templates/all_devices.j2', workspace_id=workspace_id)
+    devices = graphql_get(url=url, query=device_query, token=token)
+    serialise(path='/mnt/data/devices.json', data=devices)
 
-        # Download device metadata from Datacake
-        get_datacake_devices = vent.tasks.graphql_task.GraphqlHttpTask(
-            query=device_query, url=url, session=session)
+    # Get raw data
+    data_query = vent.utils.render_template(
+        './vent/templates/device_history.j2', fields=fields)
+    raw_data = graphql_get(url=url, query=data_query, token=token)
+    serialise(path='/mnt/data/my_data.json', data=raw_data)
 
-        # devices_data = get_datacake_devices.run()  # type: requests.Response
-        save_devices_raw_data(get_datacake_devices)
-
-        data_query = vent.utils.render_template(
-            './vent/templates/device_history.j2', )
-    # # Download datacake data
-    # raw_data = extract_datacake_data()
-    #
     # # Load metadata CSV from research storage
     # deployments = get_deployments()
     #

@@ -6,4 +6,13 @@ services:
       dockerfile: ./vent/Dockerfile
     env_file: .env
     volumes:
+      # Enable live code editing without rebuilding image
       - ./vent:/opt/vent/vent
+      # Research storage volume
+      - ./data:/mnt/data
+    secrets:
+      - datacake
+
+secrets:
+  datacake:
+    file: ./secrets/datacake.txt
