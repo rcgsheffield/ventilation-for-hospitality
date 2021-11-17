@@ -9,5 +9,3 @@ def render_template(path: Union[pathlib.Path, str], **kwargs) -> str:
     with path.open() as file:
         template = jinja2.Template(file.read())
     return template.render(**kwargs)
-
-
