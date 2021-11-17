@@ -3,9 +3,14 @@ Ventilation for Hospitality workflow
 """
 
 import logging
+import os
 import pathlib
 import datetime
-from typing import Union
+import json
+import csv
+from typing import Union, Iterable
+
+import pandas
 
 import vent.utils
 import vent.http_session
@@ -16,35 +21,73 @@ logger = logging.getLogger(__name__)
 def serialise(path: Union[str, pathlib.Path], data: str, mode: str = 'w'):
     path = pathlib.Path(path)
 
+    # Make directory
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Write file
     with path.open(mode) as file:
         file.write(data)
         logger.info(f'Wrote "{file.name}"')
 
 
+def parse_rows(data: str) -> Iterable[dict]:
+    """
+    Parse GraphQL response into separate data rows
+    """
+    body = json.loads(data)
+    for device in body['data']['allDevices']:
+        history = json.loads(device.pop('history'))
+        for row in history:
+            yield dict(**device, **row)
+
+
+def write_csv(path: Union[str, pathlib.Path], rows: Iterable[dict]):
+    path = pathlib.Path(path)
+    writer = None
+
+    with path.open('w') as file:
+
+        for row in rows:
+            if not writer:
+                writer = csv.DictWriter(file, fieldnames=row.keys())
+                writer.writeheader()
+
+            writer.writerow(row)
+
+        logger.info(f'Wrote "{file.name}"')
+
+
 def run(workspace_id: str, token: str, fields: str, url: str,
         time_range_start: datetime.datetime,
-        time_range_end: datetime.datetime):
-    session = vent.http_session.GraphQLSession(token=token, url=url)
+        time_range_end: datetime.datetime, freq='2min'):
+    """
+    Execute the workflow
+    """
 
-    # Download device metadata from Datacake
-    device_query = vent.utils.render_template(
-        './vent/templates/all_devices.j2', workspace_id=workspace_id)
-    devices = session.get(query=device_query).text
-    serialise(path='/mnt/data/devices.json', data=devices)
+    # Build the target subdirectory to write to
+    directory = pathlib.Path(os.getenv('ROOT_DIR', '.')).joinpath(
+        time_range_end.date().isoformat())
 
-    # Get raw data
-    data_query = vent.utils.render_template(
-        './vent/templates/device_history.j2', workspace_id=workspace_id,
-        fields=fields, time_range_start=time_range_start.isoformat(),
-        time_range_end=time_range_end.isoformat())
-    raw_data = session.get(query=data_query).text
-    serialise(path='/mnt/data/my_data.json', data=raw_data)
+    # Connect to Datacake
+    with vent.http_session.GraphQLSession(token=token, url=url) as session:
+        # Download device metadata from Datacake
+        device_query = vent.utils.render_template(
+            './vent/templates/all_devices.j2', workspace_id=workspace_id)
+        devices = session.get(query=device_query).text
+        serialise(path=directory.joinpath('devices.json'), data=devices)
 
-    # # Load metadata CSV from research storage
-    # deployments = get_deployments()
-    #
-    # # Transform data
-    # clean_data = transform(deployments, raw_data, devices)
-    #
-    # # Serialise clean data to research storage
-    # load_clean_data(clean_data)
+        # Get raw data
+        data_query = vent.utils.render_template(
+            './vent/templates/device_history.j2', workspace_id=workspace_id,
+            fields=fields, time_range_start=time_range_start.isoformat(),
+            time_range_end=time_range_end.isoformat())
+        raw_data = session.get(query=data_query).text
+    serialise(path=directory.joinpath('raw_data.json'), data=raw_data)
+
+    # Transform data
+    clean_data = parse_rows(raw_data)
+    data = pandas.DataFrame.from_records(clean_data)
+    data.info()
+    data['time'] = pandas.to_datetime(data['time']).dt.floor(freq)
+    print(data.head())
+    write_csv(path=directory.joinpath('clean_data.csv'), rows=clean_data)

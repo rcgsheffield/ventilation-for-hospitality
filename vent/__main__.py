@@ -33,26 +33,27 @@ def load_token(path) -> str:
 
 
 def main():
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('-v', '--verbose', action='store_true')
-    arg_parser.add_argument('-w', '--workspace_id', type=str,
-                            help='Datacake workspace identifier',
-                            default=os.getenv('WORKSPACE_ID'))
-    arg_parser.add_argument('-u', '--url', type=str, help='GraphQL API URL',
-                            default=os.getenv('GRAPHQL_URL'))
-    arg_parser.add_argument('-f', '--fields', type=str,
-                            help='Fields to select (JSON list)',
-                            default=os.getenv('FIELDS'))
-    arg_parser.add_argument('-t', '--token', type=str,
-                            help='Datacake API token')
-    arg_parser.add_argument('-s', '--start', type=timestamp,
-                            help='Start time ISO 8601 timestamp',
-                            default=datetime.datetime.utcnow() - datetime.timedelta(
-                                hours=24))
-    arg_parser.add_argument('-e', '--end', type=timestamp,
-                            help='End time ISO 8601 timestamp',
-                            default=datetime.datetime.utcnow())
-    args = arg_parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbose', action='store_true')
+    parser.add_argument('-w', '--workspace_id', type=str,
+                        help='Datacake workspace identifier',
+                        default=os.getenv('WORKSPACE_ID'))
+    parser.add_argument('-u', '--url', type=str, help='GraphQL API URL',
+                        default=os.getenv('GRAPHQL_URL'))
+    parser.add_argument('-f', '--fields', type=str,
+                        help='Fields to select (JSON list)',
+                        default=os.getenv('FIELDS'))
+    parser.add_argument('-t', '--token', type=str,
+                        help='Datacake API token')
+    parser.add_argument('-s', '--start', type=timestamp,
+                        help='Start time ISO 8601 timestamp',
+                        default=datetime.datetime.utcnow() - datetime.timedelta(
+                            hours=25))
+    parser.add_argument('-e', '--end', type=timestamp,
+                        help='End time ISO 8601 timestamp',
+                        default=datetime.datetime.utcnow())
+    parser.add_argument('-f', '--freq', default=os.getenv('FREQ', '2min'))
+    args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
 
