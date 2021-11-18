@@ -58,6 +58,14 @@ def write_csv(path: Union[str, pathlib.Path], rows: Iterable[dict]):
         logger.info(f'Wrote "{file.name}"')
 
 
+def transform(data: Iterable[dict], freq: str) -> pandas.DataFrame:
+    data = pandas.DataFrame.from_records(data)
+    # Round to nearest 2 minutes
+    data['time'] = pandas.to_datetime(data['time']).dt.floor(freq)
+    # De-duplicate
+    return data.groupby(['id', 'time']).first()
+
+
 def run(workspace_id: str, token: str, fields: str, url: str,
         time_range_start: datetime.datetime,
         time_range_end: datetime.datetime, freq='2min', root_dir: str = '.'):
@@ -91,8 +99,8 @@ def run(workspace_id: str, token: str, fields: str, url: str,
 
     # Transform data
     clean_data = parse_rows(raw_data)
-    data = pandas.DataFrame.from_records(clean_data)
-    data.info()
-    data['time'] = pandas.to_datetime(data['time']).dt.floor(freq)
-    print(data.head())
-    write_csv(path=directory.joinpath('clean_data.csv'), rows=clean_data)
+    data = transform(clean_data, freq=freq)
+    # Export CSV
+    path = directory.joinpath('clean_data.csv')
+    data.to_csv(path)
+    logger.info(f'Wrote "{path}"')
