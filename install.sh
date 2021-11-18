@@ -7,6 +7,8 @@ PYTHON_BINARY=$VENV_DIR/bin/python3.9
 # Exit immediately if a command exits with a non-zero status
 set -e
 
+apt-get update
+apt-get -y upgrade
 apt-get -y install python3.9
 
 echo "Installing program files..."
