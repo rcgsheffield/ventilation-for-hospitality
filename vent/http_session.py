@@ -44,6 +44,10 @@ class GraphQLSession(requests.Session):
     def get(self, query, **kwargs):
         logger.debug(query)
         response = super().get(self.url, json=dict(query=query), **kwargs)
+        for header, value in response.request.headers.items():
+            logger.debug(f'REQUEST HEADER {header}: {value}')
+        for header, value in response.headers.items():
+            logger.debug(f'RESPONSE HEADER {header}: {value}')
         try:
             response.raise_for_status()
         except requests.HTTPError:
