@@ -52,7 +52,7 @@ def main():
     parser.add_argument('-e', '--end', type=timestamp,
                         help='End time ISO 8601 timestamp',
                         default=datetime.datetime.utcnow())
-    parser.add_argument('-f', '--freq', default=os.getenv('FREQ', '2min'))
+    parser.add_argument('-q', '--freq', default=os.getenv('FREQ', '2min'))
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
