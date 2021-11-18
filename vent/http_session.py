@@ -42,6 +42,7 @@ class GraphQLSession(requests.Session):
         return adapter
 
     def get(self, query, **kwargs):
+        logger.debug(query)
         response = super().get(self.url, json=dict(query=query), **kwargs)
         try:
             response.raise_for_status()
