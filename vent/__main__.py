@@ -70,6 +70,9 @@ def main():
     if not token:
         token = load_token(os.getenv('DATACAKE_TOKEN_SECRET_FILE'))
 
+    if not args.workspace_id:
+        raise ValueError('workspace_id is required (or WORKSPACE_ID env var)')
+
     # Execute pipeline
     vent.workflow.run(
         workspace_id=args.workspace_id,

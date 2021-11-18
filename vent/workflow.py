@@ -82,8 +82,10 @@ def run(workspace_id: str, token: str, fields: str, url: str,
         data_query = vent.utils.render_template(
             template_dir.joinpath('device_history.j2'),
             workspace_id=workspace_id,
-            fields=fields, time_range_start=time_range_start.isoformat(),
-            time_range_end=time_range_end.isoformat())
+            fields=fields,
+            time_range_start=time_range_start.isoformat(),
+            time_range_end=time_range_end.isoformat()
+        )
         raw_data = session.get(query=data_query).text
     serialise(path=directory.joinpath('raw_data.json'), data=raw_data)
 
