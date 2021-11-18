@@ -1,0 +1,21 @@
+# This systemd unit is used to control the workflow schedule
+
+# systemd timer docs:
+# https://www.freedesktop.org/software/systemd/man/systemd.timer.html
+
+[Unit]
+Description=Ventilation for Hospitality workflow schedule
+Documentation=https://github.com/rcgsheffield/ventilation-for-hospitality
+
+[Timer]
+# Target service to be started
+Unit=vent.service
+# Start on boot
+OnBootSec=1min
+# Wait x minutes (monotonic timer) between runs
+OnUnitActiveSec=1h
+
+[Install]
+# Start automatically on system reboot
+# https://man.archlinux.org/man/systemd.special.7
+WantedBy=timers.target

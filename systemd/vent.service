@@ -1,0 +1,18 @@
+# This systemd unit is used to control the workflow execution environment
+
+[Unit]
+Description=Ventilation for Hospitality workflow
+Documentation=https://github.com/rcgsheffield/ventilation-for-hospitality
+After=network.target
+
+[Service]
+Type=simple
+User=vent
+WorkingDirectory=/opt/vent
+EnvironmentFile=/home/vent/.env
+ExecStart=/opt/vent/venv/bin/python3.9 -m vent
+# Don't restart because this service will be triggered on a schedule
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
