@@ -1,0 +1,19 @@
+# This systemd unit is used to control the data pipeline service
+# https://www.freedesktop.org/software/systemd/man/systemd.exec.html
+[Unit]
+Description=Ventilation for hospitality data pipeline service
+Documentation=https://github.com/rcgsheffield/ventilation-for-hospitality
+After=network.target
+
+[Service]
+# https://trstringer.com/simple-vs-oneshot-systemd-service/#summary
+Type=simple
+User=vent
+WorkingDirectory=~
+EnvironmentFile=~/.env
+ExecStart=/opt/vent/venv/bin/python /opt/awesome/__main__.py
+# Don't restart because this service will be triggered on a schedule
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

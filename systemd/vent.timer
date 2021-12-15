@@ -1,0 +1,17 @@
+# This systemd unit is used to control the data bridge service
+# https://serverfault.com/a/777558
+[Unit]
+Description=Ventilation for hospitality data pipeline timer
+Documentation=https://github.com/rcgsheffield/ventilation-for-hospitality
+
+[Timer]
+Unit=vent.service
+# Start on boot
+OnBootSec=1min
+# Wait x minutes (monotonic timer) between runs
+OnUnitActiveSec=1hour
+
+[Install]
+# Start automatically on system reboot
+# https://man.archlinux.org/man/systemd.special.7
+WantedBy=timers.target

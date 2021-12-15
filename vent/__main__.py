@@ -12,7 +12,7 @@ from getpass import getpass
 import vent.workflow
 
 DESCRIPTION = """
-Ventilation for hositality data pipelines
+Ventilation for hospitality data pipelines
 """
 
 DATACAKE_URL = ''
