@@ -16,7 +16,7 @@ apt-get install -y $PYTHON_VERSION $PYTHON_VERSION-venv python3-pip
 $PYTHON_VERSION -m pip install pip --upgrade
 
 # Create virtual environment
-$PYTHON_VERSION -m pip venv $VENV_DIR
+$PYTHON_VERSION -m venv $VENV_DIR
 $VENV_DIR/bin/pip install -r requirements.txt
 
 # Install data pipeline code
