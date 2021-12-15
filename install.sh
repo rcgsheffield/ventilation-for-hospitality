@@ -10,7 +10,7 @@ set -o nounset
 set -o errexit
 
 # Install prerequisite OS packages
-apt-get install -y $PYTHON_VERSION $PYTHON_VERSION-venv
+apt-get install -y $PYTHON_VERSION $PYTHON_VERSION-venv python3-pip
 
 # Update pip package
 $PYTHON_VERSION -m pip install pip --upgrade
