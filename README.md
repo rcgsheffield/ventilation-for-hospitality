@@ -11,6 +11,11 @@ Ventilation for Hospitality Project
 
 Make sure the OS packages are up-to-date.
 
+```bash
+sudo apt update
+sudo apt upgrade
+```
+
 Clone the code repository.
 
 Run the installation script as a superuser:
