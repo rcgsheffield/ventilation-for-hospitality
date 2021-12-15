@@ -1,5 +1,6 @@
 # This systemd unit is used to control the data pipeline service
 # https://www.freedesktop.org/software/systemd/man/systemd.exec.html
+# This systemd unit is used to control the workflow execution environment
 [Unit]
 Description=Ventilation for hospitality data pipeline service
 Documentation=https://github.com/rcgsheffield/ventilation-for-hospitality
@@ -11,7 +12,7 @@ Type=simple
 User=vent
 WorkingDirectory=~
 EnvironmentFile=~/.env
-ExecStart=/opt/vent/venv/bin/python /opt/awesome/__main__.py
+ExecStart=/opt/vent/venv/bin/python3.9 -m vent
 # Don't restart because this service will be triggered on a schedule
 Restart=no
 

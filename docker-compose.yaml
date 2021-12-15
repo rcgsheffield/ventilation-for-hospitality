@@ -10,9 +10,3 @@ services:
       - ./vent:/opt/vent/vent
       # Research storage volume
       - ./data:/mnt/data
-    secrets:
-      - datacake
-
-secrets:
-  datacake:
-    file: ./secrets/datacake.txt

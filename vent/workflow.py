@@ -3,7 +3,6 @@ Ventilation for Hospitality workflow
 """
 
 import logging
-import os
 import pathlib
 import datetime
 import json
@@ -16,6 +15,8 @@ import vent.utils
 import vent.http_session
 
 logger = logging.getLogger(__name__)
+
+TEMPLATE_DIR = './vent/templates'
 
 
 def serialise(path: Union[str, pathlib.Path], data: str, mode: str = 'w'):
@@ -57,37 +58,49 @@ def write_csv(path: Union[str, pathlib.Path], rows: Iterable[dict]):
         logger.info(f'Wrote "{file.name}"')
 
 
+def transform(data: Iterable[dict], freq: str) -> pandas.DataFrame:
+    data = pandas.DataFrame.from_records(data)
+    # Round to nearest 2 minutes
+    data['time'] = pandas.to_datetime(data['time']).dt.floor(freq)
+    # De-duplicate
+    return data.groupby(['id', 'time']).first()
+
+
 def run(workspace_id: str, token: str, fields: str, url: str,
         time_range_start: datetime.datetime,
-        time_range_end: datetime.datetime, freq='2min'):
+        time_range_end: datetime.datetime, freq='2min', root_dir: str = '.'):
     """
     Execute the workflow
     """
 
     # Build the target subdirectory to write to
-    directory = pathlib.Path(os.getenv('ROOT_DIR', '.')).joinpath(
+    directory = pathlib.Path(root_dir).joinpath(
         time_range_end.date().isoformat())
+    template_dir = pathlib.Path(TEMPLATE_DIR)
 
     # Connect to Datacake
     with vent.http_session.GraphQLSession(token=token, url=url) as session:
         # Download device metadata from Datacake
         device_query = vent.utils.render_template(
-            './vent/templates/all_devices.j2', workspace_id=workspace_id)
+            template_dir.joinpath('all_devices.j2'), workspace_id=workspace_id)
         devices = session.get(query=device_query).text
         serialise(path=directory.joinpath('devices.json'), data=devices)
 
         # Get raw data
         data_query = vent.utils.render_template(
-            './vent/templates/device_history.j2', workspace_id=workspace_id,
-            fields=fields, time_range_start=time_range_start.isoformat(),
-            time_range_end=time_range_end.isoformat())
+            template_dir.joinpath('device_history.j2'),
+            workspace_id=workspace_id,
+            fields=fields,
+            time_range_start=time_range_start.isoformat(),
+            time_range_end=time_range_end.isoformat()
+        )
         raw_data = session.get(query=data_query).text
     serialise(path=directory.joinpath('raw_data.json'), data=raw_data)
 
     # Transform data
     clean_data = parse_rows(raw_data)
-    data = pandas.DataFrame.from_records(clean_data)
-    data.info()
-    data['time'] = pandas.to_datetime(data['time']).dt.floor(freq)
-    print(data.head())
-    write_csv(path=directory.joinpath('clean_data.csv'), rows=clean_data)
+    data = transform(clean_data, freq=freq)
+    # Export CSV
+    path = directory.joinpath('clean_data.csv')
+    data.to_csv(path)
+    logger.info(f'Wrote "{path}"')
