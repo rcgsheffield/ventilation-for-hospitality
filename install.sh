@@ -12,7 +12,7 @@ set -o errexit
 # Install prerequisite OS packages
 apt-get update
 apt-get -y upgrade
-apt install -y $PYTHON_VERSION $PYTHON_VERSION-pip $PYTHON_VERSION9-venv
+apt install -y $PYTHON_VERSION $PYTHON_VERSION-pip $PYTHON_VERSION-venv
 
 # Update pip package
 /usr/local/bin/$PYTHON_VERSION -m pip install pip --upgrade

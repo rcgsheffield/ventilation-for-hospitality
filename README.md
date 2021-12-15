@@ -9,7 +9,9 @@ Ventilation for Hospitality Project
 
 # Installation
 
-Make sure the OS packages are up-ot
+Make sure the OS packages are up-to-date.
+
+Clone the code repository.
 
 Run the installation script as a superuser:
 
@@ -27,3 +29,4 @@ python -m vent
 
 # Maintenance
 
+* Ensure 
