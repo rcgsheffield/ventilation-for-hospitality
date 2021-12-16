@@ -63,6 +63,12 @@ View the logs:
 sudo journalctl -u vent.service --since "1 hour ago"
 ```
 
+To log in as the server user in a new shell:
+
+```bash
+sudo su - vent --shell /bin/bash
+```
+
 ## Development
 
 Run the pipeline:
