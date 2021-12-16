@@ -4,7 +4,7 @@ PYTHON_VERSION=python3.9
 TARGET_DIR=/opt/vent
 VENV_DIR=$TARGET_DIR/venv
 SERVICE_USER=vent
-ENV_VAR_FILE=/home/SERVICE_USER/.env
+ENV_VAR_FILE=/home/$SERVICE_USER/.env
 
 # Exit immediately if a command exits with a non-zero status
 set -e
