@@ -36,3 +36,7 @@ systemctl daemon-reload
 sudo touch $ENV_VAR_FILE
 sudo chown $SERVICE_USER:$SERVICE_USER $ENV_VAR_FILE
 sudo chmod 600 $ENV_VAR_FILE
+
+# Create secrets directory
+mkdir --parents /home/$SERVICE_USER/.secrets
+chmod 700 /home/$SERVICE_USER/.secrets
