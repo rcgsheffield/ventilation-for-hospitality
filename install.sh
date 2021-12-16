@@ -23,7 +23,7 @@ $VENV_DIR/bin/pip install -r requirements.txt
 echo "Installing program files..."
 cp -r ./vent $TARGET_DIR/vent
 
-useradd --create-home vent
+useradd --create-home vent || echo "User already exists."
 
 echo "Installing systemd units..."
 cp -v ./systemd/vent.service /etc/systemd/system/vent.service
