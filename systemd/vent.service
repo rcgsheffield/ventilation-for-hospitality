@@ -12,7 +12,8 @@ Type=simple
 User=vent
 WorkingDirectory=/home/vent
 EnvironmentFile=/home/vent/.env
-ExecStart=/opt/vent/venv/bin/python3.9 -m vent
+ExecSearchPath=/opt/vent
+ExecStart=/opt/vent/venv/bin/python -m vent
 # Don't restart because this service will be triggered on a schedule
 Restart=no
 
