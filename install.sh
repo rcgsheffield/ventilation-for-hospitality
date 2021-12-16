@@ -41,3 +41,4 @@ sudo chmod 600 $ENV_VAR_FILE
 mkdir --parents /home/$SERVICE_USER/.secrets
 chown --recursive $SERVICE_USER:$SERVICE_USER /home/$SERVICE_USER/.secrets
 chmod 700 /home/$SERVICE_USER/.secrets
+chmod 600 /home/$SERVICE_USER/.secrets/*
