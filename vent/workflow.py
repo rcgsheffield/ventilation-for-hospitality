@@ -3,6 +3,7 @@ Ventilation for Hospitality workflow
 """
 
 import logging
+import os
 import pathlib
 import datetime
 import json
@@ -16,7 +17,7 @@ import vent.http_session
 
 logger = logging.getLogger(__name__)
 
-TEMPLATE_DIR = './vent/templates'
+TEMPLATE_DIR = os.getenv('TEMPLATE_DIR', './vent/templates')
 
 
 def serialise(path: Union[str, pathlib.Path], data: str, mode: str = 'w'):
