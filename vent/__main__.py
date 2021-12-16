@@ -17,6 +17,7 @@ Ventilation for hospitality data pipelines
 
 GRAPHQL_URL = 'https://api.datacake.co/graphql/'
 FIELDS = '[]'
+DEFAULT_START_TIME = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
 
 
 def timestamp(s: str) -> datetime.datetime:
@@ -50,8 +51,7 @@ def main():
                         help='Datacake API token')
     parser.add_argument('-s', '--start', type=timestamp,
                         help='Start time ISO 8601 timestamp',
-                        default=datetime.datetime.utcnow() - datetime.timedelta(
-                            hours=25))
+                        default=DEFAULT_START_TIME)
     parser.add_argument('-e', '--end', type=timestamp,
                         help='End time ISO 8601 timestamp',
                         default=datetime.datetime.utcnow())

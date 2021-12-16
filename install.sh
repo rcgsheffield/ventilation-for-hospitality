@@ -20,7 +20,10 @@ $PYTHON_VERSION -m venv $VENV_DIR
 $VENV_DIR/bin/pip install -r requirements.txt
 
 # Install data pipeline code
-cp -vr ./vent $TARGET_DIR/vent
+echo "Installing program files..."
+cp -r ./vent $TARGET_DIR/vent
+
+useradd --gid vent --create-home vent
 
 echo "Installing systemd units..."
 cp -v ./systemd/vent.service /etc/systemd/system/vent.service
