@@ -28,7 +28,7 @@ def load_token(path) -> str:
     try:
         path = pathlib.Path(path)
         with path.open() as file:
-            return file.read()
+            return file.read().rstrip('\n')
     # No env var specified
     except (KeyError, TypeError):
         return getpass('Enter Datacake API token: ')
