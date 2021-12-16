@@ -21,9 +21,9 @@ $PYTHON_VERSION -m pip install pip --upgrade
 $PYTHON_VERSION -m venv $VENV_DIR
 $VENV_DIR/bin/pip install -r requirements.txt
 
-# Install data pipeline code
+# Copy files to a module subdirectory
 echo "Installing program files..."
-cp -rf ./vent $TARGET_DIR/vent
+cp -rf ./vent $TARGET_DIR/vent/
 
 useradd --create-home $SERVICE_USER || echo "User already exists."
 
