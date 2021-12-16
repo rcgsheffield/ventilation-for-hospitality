@@ -23,7 +23,7 @@ $VENV_DIR/bin/pip install -r requirements.txt
 
 # Install data pipeline code
 echo "Installing program files..."
-cp -r ./vent $TARGET_DIR/vent
+cp -rf ./vent $TARGET_DIR/vent
 
 useradd --create-home $SERVICE_USER || echo "User already exists."
 
