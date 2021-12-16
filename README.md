@@ -24,7 +24,36 @@ Run the installation script as a superuser:
 sudo sh install.sh
 ```
 
+Install any secrets into the environment file, which should have strict file permissions.
+
+```bash
+sudo vi /home/vent/.env
+```
+
+Enable the `systemd` timer (this runs the data pipeline on a regular schedule)
+
+```bash
+sudo systemctl enable vent.timer
+```
+
 # Usage
+
+View the service status:
+
+```bash
+sudo systemctl status vent.timer
+sudo systemctl status vent.service
+```
+
+Enable the service:
+
+```bash
+sudo systemctl enable vent.timer
+```
+
+
+
+## Development
 
 Run the pipeline:
 

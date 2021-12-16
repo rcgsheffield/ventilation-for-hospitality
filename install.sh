@@ -3,6 +3,8 @@
 PYTHON_VERSION=python3.9
 TARGET_DIR=/opt/vent
 VENV_DIR=$TARGET_DIR/venv
+SERVICE_USER=vent
+ENV_VAR_FILE=/home/SERVICE_USER/.env
 
 # Exit immediately if a command exits with a non-zero status
 set -e
@@ -23,9 +25,14 @@ $VENV_DIR/bin/pip install -r requirements.txt
 echo "Installing program files..."
 cp -r ./vent $TARGET_DIR/vent
 
-useradd --create-home vent || echo "User already exists."
+useradd --create-home $SERVICE_USER || echo "User already exists."
 
 echo "Installing systemd units..."
 cp -v ./systemd/vent.service /etc/systemd/system/vent.service
 cp -v ./systemd/vent.timer /etc/systemd/system/vent.timer
 systemctl daemon-reload
+
+# Install environment variables file for secrets
+sudo touch $ENV_VAR_FILE
+sudo chown $SERVICE_USER:$SERVICE_USER $ENV_VAR_FILE
+sudo chmod 600 $ENV_VAR_FILE

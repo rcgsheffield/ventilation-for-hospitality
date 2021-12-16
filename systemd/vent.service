@@ -10,8 +10,8 @@ After=network.target
 # https://trstringer.com/simple-vs-oneshot-systemd-service/#summary
 Type=simple
 User=vent
-WorkingDirectory=~
-EnvironmentFile=~/.env
+WorkingDirectory=/home/vent
+EnvironmentFile=/home/vent/.env
 ExecStart=/opt/vent/venv/bin/python3.9 -m vent
 # Don't restart because this service will be triggered on a schedule
 Restart=no
