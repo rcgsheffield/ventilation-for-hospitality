@@ -42,3 +42,6 @@ mkdir --parents /home/$SERVICE_USER/.secrets
 chown --recursive $SERVICE_USER:$SERVICE_USER /home/$SERVICE_USER/.secrets
 chmod 700 /home/$SERVICE_USER/.secrets
 chmod 600 /home/$SERVICE_USER/.secrets/*
+
+# Create data target
+mkdir --parents /mnt/airbods/ventilation
