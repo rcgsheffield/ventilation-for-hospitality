@@ -104,11 +104,19 @@ python -m vent --help
 
 # Maintenance
 
-* Ensure OS packages are up to date using the [API package manager](https://help.ubuntu.com/community/AptGet/Howto).
+The following steps should be performed on a regular schedule to keep the system up-to-date and secure.
+
+* Ensure OS packages are up to date using the [APT package manager](https://help.ubuntu.com/community/AptGet/Howto):
   * `sudo apt update`
   * `sudo apt upgrade`
-* Update Python packages
-  * Run security scan: `/opt/vent/venv/bin/safety check`
+* Update Python packages:
+  * Run security scan using [Safety](https://pypi.org/project/safety/): `/opt/vent/venv/bin/safety check`
   * Install any minor version upgrades: `sudo /opt/vent/venv/bin/pip install --upgrade -r ./requirements.txt`
   * Check for out-of-date Python packages using the [Python Package Installer](https://pip.pypa.io/en/stable/) (PIP) `list` command to find [outdated packages](https://pip.pypa.io/en/stable/user_guide/#listing-packages): `/opt/vent/venv/bin/pip list --outdated`
     * Upgrade these packages (you should test any major version updates in a development environment before installing them on the production environment): `sudo /opt/vent/venv/bin/pip install <package> --upgrade`.
+  * Check storage space using `df --human-readable ` and `ncdu`
+    * Some ways to clear storage space:
+      * Delete old system logs: `sudo journalctl --vacuum-size=500M`
+      * Clean up APT caches:
+        * `sudo apt autoclean`
+        * `sudo apt autoremove`
