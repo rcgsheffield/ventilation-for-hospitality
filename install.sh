@@ -15,11 +15,10 @@ set -o errexit
 # Install prerequisite OS packages
 apt-get install -y $PYTHON_VERSION $PYTHON_VERSION-venv python3-pip
 
-# Update pip package
-$PYTHON_VERSION -m pip install pip --upgrade
-
 # Create virtual environment
 $PYTHON_VERSION -m venv $VENV_DIR
+# Update pip package
+$VENV_DIR/bin/pip install pip --upgrade
 $VENV_DIR/bin/pip install -r requirements.txt
 
 # Copy files to a module subdirectory
