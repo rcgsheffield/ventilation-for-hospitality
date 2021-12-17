@@ -5,10 +5,13 @@ import logging
 import requests.adapters
 import requests.packages.urllib3
 
+RETRY_STRATEGY_TOTAL = os.getenv('RETRY_STRATEGY_TOTAL', 3)
+RETRY_STRATEGY_BACKOFF_FACTOR = os.getenv('RETRY_STRATEGY_BACKOFF_FACTOR', 1.1)
+
 logger = logging.getLogger(__name__)
 
 RETRY_STRATEGY = dict(
-    total=os.getenv('RETRY_STRATEGY_TOTAL', 3),
+    total=RETRY_STRATEGY_TOTAL,
     status_forcelist=[
         # 400-range
         http.HTTPStatus.TOO_MANY_REQUESTS,
@@ -18,7 +21,7 @@ RETRY_STRATEGY = dict(
         http.HTTPStatus.SERVICE_UNAVAILABLE,
         http.HTTPStatus.GATEWAY_TIMEOUT,
     ],
-    backoff_factor=os.getenv('RETRY_STRATEGY_BACKOFF_FACTOR', 1.1),
+    backoff_factor=RETRY_STRATEGY_BACKOFF_FACTOR,
 )
 
 

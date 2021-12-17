@@ -61,14 +61,13 @@ def main():
     args = parser.parse_args()
 
     # Configure logging
-    logging.basicConfig(
-        level=args.loglevel or (
-            logging.DEBUG if args.verbose else logging.INFO))
+    logging.basicConfig(level=args.loglevel or (
+        logging.DEBUG if args.verbose else args.loglevel))
 
     # Get API authentication token
     token = args.token or os.getenv('DATACAKE_TOKEN')
     if not token:
-        token = load_token(os.getenv('DATACAKE_TOKEN_SECRET_FILE'))
+        token = load_token(os.getenv('DATACAKE_TOKEN_FILE'))
 
     if not args.workspace_id:
         raise ValueError('workspace_id is required (or WORKSPACE_ID env var)')
