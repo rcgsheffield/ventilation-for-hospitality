@@ -47,4 +47,4 @@ chmod 600 /home/$SERVICE_USER/.secrets/*
 # Create data target
 mkdir --parents $DATA_DIR
 chown --recursive 1000:1000 $DATA_DIR
-chmod 774 $DATA_DIR
+chmod 775 $DATA_DIR
