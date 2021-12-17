@@ -38,7 +38,7 @@ def main():
     # Get command line arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('-v', '--verbose', action='store_true')
-    parser.add_argument('-l', '--loglevel', default=os.getenv('LOGLEVEL', ''))
+    parser.add_argument('-l', '--loglevel', default=os.getenv('LOGLEVEL'))
     parser.add_argument('-w', '--workspace_id', type=str,
                         help='Datacake workspace identifier',
                         default=os.getenv('WORKSPACE_ID'))
