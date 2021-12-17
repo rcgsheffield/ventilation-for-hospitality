@@ -5,7 +5,7 @@ See also the [Vent page on the ITS Wiki](https://itswiki.shef.ac.uk/wiki/Vent).
 
 ## Data pipeline
 
-The data pipeline (defined in `vent/workflow.py`) runs on a regular schedule (defined by `systemd/vent.timer`) and has the following steps:
+This code is a Python executable module that execute a data pipeline (defined in `vent/workflow.py`) and runs on a regular schedule (defined by `systemd/vent.timer`) and has the following steps:
 
 - Retrieve sensor metadata from Datacake in JSON format
 - Download raw data (historical sensor data) from Datacake in JSON format
@@ -16,6 +16,8 @@ The data and metadata are saved to a [Standard Research Storage](https://student
 The data source is a [GraphQL API](https://docs.datacake.de/api/graphql-api). Queries in the GraphQL language are defined in `vent/templates/*.j2` as [Jinja](https://jinja.palletsprojects.com/en/3.0.x/) templates, which allow for variables to be inserted.
 
 # Installation
+
+This code is designed to be installed on an IT Services [Virtual Server](https://staff.sheffield.ac.uk/it-services/storage/virtual-servers).
 
 Make sure the operating system (OS) packages are up-to-date.
 
