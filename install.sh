@@ -23,7 +23,7 @@ $VENV_DIR/bin/pip install -r requirements.txt
 
 # Copy files to a module subdirectory
 echo "Installing program files..."
-cp -rf ./vent $TARGET_DIR/vent/
+cp -rf ./vent/. $TARGET_DIR/vent/
 
 useradd --create-home $SERVICE_USER || echo "User already exists."
 
