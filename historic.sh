@@ -13,6 +13,9 @@ source /home/vent/.env
 set +a
 export PYTHONPATH=/opt/vent
 
+# Check authentication
+/opt/vent/venv/bin/python -m vent --auth
+
 # Iterate over historic dates
 # Start date
 day="2021-11-01"
@@ -21,7 +24,7 @@ while [ "$day" != $(date -I) ]; do
   echo $day
 
   # Run pipeline for this day
-  /opt/vent/venv/bin/python -m vent --start $day
+  /opt/vent/venv/bin/python -m vent --start $day --verbose
 
   # Add one day
   day=$(date -I -d "$day + 1 day")

@@ -38,15 +38,20 @@ def authenticate(token, url):
     """
     Test user authentication
     """
-    import vent.http_session
-    with vent.http_session.GraphQLSession(token=token, url=url) as session:
+
+    from vent.http_session import GraphQLSession
+
+    with GraphQLSession(token=token, url=url) as session:
         query = "{ user { id } }"
-        print(session.get(query=query).text)
+        return session.get(query=query).text
 
 
-def main():
-    # Get command line arguments
+def get_args() -> argparse.Namespace:
+    """
+    Get command line arguments
+    """
     parser = argparse.ArgumentParser()
+
     parser.add_argument('-v', '--verbose', action='store_true')
     parser.add_argument('-l', '--loglevel', default=os.getenv('LOGLEVEL'))
     parser.add_argument('-w', '--workspace_id', type=str,
@@ -70,8 +75,12 @@ def main():
                         help='Serialisation directory')
     parser.add_argument('-a', '--auth', help='Check authentication',
                         action='store_true')
-    args = parser.parse_args()
 
+    return parser.parse_args()
+
+
+def main():
+    args = get_args()
     # Configure logging
     logging.basicConfig(level=args.loglevel or (
         logging.DEBUG if args.verbose else args.loglevel))
@@ -85,7 +94,7 @@ def main():
         raise ValueError('workspace_id is required (or WORKSPACE_ID env var)')
 
     if args.auth:
-        authenticate(token=token, url=args.url)
+        print(authenticate(token=token, url=args.url))
         exit()
 
     # Execute pipeline

@@ -29,7 +29,10 @@ class GraphQLSession(requests.Session):
     def __init__(self, token, url):
         super().__init__()
 
-        self.headers.update({'Authorization': f'Token {token}'})
+        self.headers.update({
+            'Authorization': f'Token {token}',
+            'User-agent': 'ventilation-for-hospitality',
+        })
         self.url = url
 
     def mount_retry_strategy(self, **kwargs):
@@ -44,7 +47,7 @@ class GraphQLSession(requests.Session):
 
         return adapter
 
-    def get(self, query, **kwargs):
+    def get(self, query, **kwargs) -> requests.Response:
         logger.debug(query)
         response = super().get(self.url, json=dict(query=query), **kwargs)
         for header, value in response.request.headers.items():
