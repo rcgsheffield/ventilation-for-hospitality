@@ -69,7 +69,13 @@ def write_csv(path: Union[str, pathlib.Path], rows: Iterable[dict]):
 
 
 def transform(data: Iterable[dict], freq: str) -> pandas.DataFrame:
-    data = pandas.DataFrame.from_records(data, columns=['id', 'time'])
+    data = pandas.DataFrame.from_records(data)
+
+    # Ensure consistent data structure (avoid errors below)
+    if data.empty:
+        data['id'] = pandas.Series()
+        data['time'] = pandas.Series()
+
     # Round to nearest 2 minutes
     data['time'] = pandas.to_datetime(data['time']).dt.floor(freq)
     # De-duplicate
