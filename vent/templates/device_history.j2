@@ -4,7 +4,7 @@ query {{ '{' }}
     verboseName
     serialNumber
     history(
-      fields: {{ fields }}
+      fields: "{{ fields }}"
       timerangestart: "{{ time_range_start }}"
       timerangeend: "{{ time_range_end }}"
       resolution: "raw"
