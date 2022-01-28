@@ -1,9 +1,8 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
-# Historic data backfill script
-# Usage
-# sudo su - vent --shell /bin/bash
-# sh historic.sh
+# Historic data back-fill script
+# Usage:
+# sudo -u vent bash historic.sh
 
 # Abort on error
 set -e

@@ -34,6 +34,16 @@ def load_token(path) -> str:
         return getpass('Enter Datacake API token: ')
 
 
+def authenticate(token, url):
+    """
+    Test user authentication
+    """
+    import vent.http_session
+    with vent.http_session.GraphQLSession(token=token, url=url) as session:
+        query = "{ user { id } }"
+        print(session.get(query=query).text)
+
+
 def main():
     # Get command line arguments
     parser = argparse.ArgumentParser()
@@ -58,6 +68,8 @@ def main():
     parser.add_argument('-q', '--freq', default=os.getenv('FREQ', '2min'))
     parser.add_argument('-r', '--root', default=os.getenv('ROOT_DIR', '.'),
                         help='Serialisation directory')
+    parser.add_argument('-a', '--auth', help='Check authentication',
+                        action='store_true')
     args = parser.parse_args()
 
     # Configure logging
@@ -71,6 +83,10 @@ def main():
 
     if not args.workspace_id:
         raise ValueError('workspace_id is required (or WORKSPACE_ID env var)')
+
+    if args.auth:
+        authenticate(token=token, url=args.url)
+        exit()
 
     # Execute pipeline
     vent.workflow.run(
