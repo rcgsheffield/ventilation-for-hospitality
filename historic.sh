@@ -1,8 +1,12 @@
 #!/usr/bin/env sh
 
+# Historic data backfill script
 # Usage
 # sudo su - vent --shell /bin/bash
 # sh historic.sh
+
+# Abort on error
+set -e
 
 # Configure environment
 set -a # automatically export all variables
