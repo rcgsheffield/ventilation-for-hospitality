@@ -5,6 +5,8 @@ import logging
 import requests.adapters
 import requests.packages.urllib3
 
+USER_AGENT = 'ventilation-for-hospitality'
+
 RETRY_STRATEGY_TOTAL = os.getenv('RETRY_STRATEGY_TOTAL', 3)
 RETRY_STRATEGY_BACKOFF_FACTOR = os.getenv('RETRY_STRATEGY_BACKOFF_FACTOR', 1.1)
 
@@ -31,7 +33,7 @@ class GraphQLSession(requests.Session):
 
         self.headers.update({
             'Authorization': f'Token {token}',
-            'User-agent': 'ventilation-for-hospitality',
+            'User-Agent': os.getenv('USER_AGENT', USER_AGENT),
         })
         self.url = url
 
