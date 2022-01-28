@@ -92,6 +92,9 @@ def get_args() -> argparse.Namespace:
 
 
 def json_str(data: str):
+    """
+    Validate JSON string (but don't parse it)
+    """
     json.loads(data)
     return data
 
