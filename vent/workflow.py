@@ -37,6 +37,15 @@ def parse_rows(data: str) -> Iterable[dict]:
     Parse GraphQL response into separate data rows
     """
     body = json.loads(data)
+
+    # Check errors
+    try:
+        for error in body['errors']:
+            logger.error(error)
+            raise RuntimeError(error['message'])
+    except KeyError:
+        pass
+
     for device in body['data']['allDevices']:
         history = json.loads(device.pop('history'))
         for row in history:
@@ -60,7 +69,7 @@ def write_csv(path: Union[str, pathlib.Path], rows: Iterable[dict]):
 
 
 def transform(data: Iterable[dict], freq: str) -> pandas.DataFrame:
-    data = pandas.DataFrame.from_records(data)
+    data = pandas.DataFrame.from_records(data, columns=['id', 'time'])
     # Round to nearest 2 minutes
     data['time'] = pandas.to_datetime(data['time']).dt.floor(freq)
     # De-duplicate
@@ -95,7 +104,8 @@ def run(workspace_id: str, token: str, fields: str, url: str,
             time_range_start=time_range_start.isoformat(),
             time_range_end=time_range_end.isoformat()
         )
-        raw_data = session.get(query=data_query).text
+        response = session.get(query=data_query)
+        raw_data = response.text
     serialise(path=directory.joinpath('raw_data.json'), data=raw_data)
 
     # Transform data

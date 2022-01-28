@@ -3,6 +3,7 @@ Execute data pipeline
 """
 
 import argparse
+import json
 import logging
 import os
 import pathlib
@@ -15,8 +16,18 @@ DESCRIPTION = """
 Ventilation for hospitality data pipelines
 """
 
+_FIELDS = [
+    'TEMPERATURE',
+    'HUMIDITY',
+    'CO2',
+    # 'AIR_QUALITY',
+    'LORAWAN_RSSI',
+    'LORAWAN_SNR',
+    # 'LORAWAN_DATARATE',
+]
+
 GRAPHQL_URL = 'https://api.datacake.co/graphql/'
-FIELDS = '[]'
+FIELDS = json.dumps(_FIELDS)
 DEFAULT_START_TIME = datetime.datetime.utcnow() - datetime.timedelta(hours=25)
 
 
@@ -75,12 +86,18 @@ def get_args() -> argparse.Namespace:
                         help='Serialisation directory')
     parser.add_argument('-a', '--auth', help='Check authentication',
                         action='store_true')
+    parser.add_argument('--version', action='store_true')
 
     return parser.parse_args()
 
 
 def main():
     args = get_args()
+
+    if args.version:
+        print(vent.__version__)
+        exit()
+
     # Configure logging
     logging.basicConfig(level=args.loglevel or (
         logging.INFO if args.verbose else args.loglevel))

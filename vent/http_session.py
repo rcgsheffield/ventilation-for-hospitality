@@ -5,12 +5,13 @@ import logging
 import requests.adapters
 import requests.packages.urllib3
 
+LOGGER = logging.getLogger(__name__)
+
 USER_AGENT = 'ventilation-for-hospitality'
 
-RETRY_STRATEGY_TOTAL = os.getenv('RETRY_STRATEGY_TOTAL', 3)
-RETRY_STRATEGY_BACKOFF_FACTOR = os.getenv('RETRY_STRATEGY_BACKOFF_FACTOR', 1.1)
-
-logger = logging.getLogger(__name__)
+RETRY_STRATEGY_TOTAL = int(os.getenv('RETRY_STRATEGY_TOTAL', 3))
+RETRY_STRATEGY_BACKOFF_FACTOR = float(
+    os.getenv('RETRY_STRATEGY_BACKOFF_FACTOR', 1.1))
 
 RETRY_STRATEGY = dict(
     total=RETRY_STRATEGY_TOTAL,
@@ -36,30 +37,34 @@ class GraphQLSession(requests.Session):
             'User-Agent': os.getenv('USER_AGENT', USER_AGENT),
         })
         self.url = url
+        self.mount_retry_strategy()
 
-    def mount_retry_strategy(self, **kwargs):
+    @property
+    def retry_strategy(self):
+        return requests.packages.urllib3.util.retry.Retry()
+
+    @property
+    def adapter(self):
+        return requests.adapters.HTTPAdapter(max_retries=self.retry_strategy)
+
+    def mount_retry_strategy(self):
         """
         Auto-retry HTTP calls
         https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/#retry-on-failure
         """
-        retry_strategy = requests.packages.urllib3.util.retry.Retry(**kwargs)
-        adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
-
-        self.mount('https://', adapter)
-
-        return adapter
+        return self.mount('https://', self.adapter)
 
     def get(self, query, **kwargs) -> requests.Response:
-        logger.debug(query)
+        LOGGER.debug(query)
         response = super().get(self.url, json=dict(query=query), **kwargs)
         for header, value in response.request.headers.items():
-            logger.debug(f'REQUEST HEADER {header}: {value}')
+            LOGGER.debug(f'REQUEST HEADER {header}: {value}')
         for header, value in response.headers.items():
-            logger.debug(f'RESPONSE HEADER {header}: {value}')
+            LOGGER.debug(f'RESPONSE HEADER {header}: {value}')
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            logger.error(response.request.body)
-            logger.error(response.text)
+            LOGGER.error(response.request.body)
+            LOGGER.error(response.text)
             raise
         return response

@@ -22,11 +22,12 @@ day="2021-11-01"
 # Loop until current date
 while [ "$day" != $(date -I) ]; do
   echo $day
+  # Add one day
+  end_day=$(date -I -d "$day + 1 day")
 
   # Run pipeline for this day
-  /opt/vent/venv/bin/python -m vent --start $day --verbose
+  /opt/vent/venv/bin/python -m vent --start "$day" --end "$end_day" --verbose
 
-  # Add one day
-  day=$(date -I -d "$day + 1 day")
+  day=$end_day
 
 done
