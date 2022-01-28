@@ -91,6 +91,11 @@ def get_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def validate_json(data: str):
+    json.loads(data)
+    return data
+
+
 def main():
     args = get_args()
 
@@ -118,7 +123,7 @@ def main():
     vent.workflow.run(
         workspace_id=args.workspace_id,
         url=args.url,
-        fields=args.fields,
+        fields=validate_json(args.fields),
         token=token,
         time_range_start=args.start,
         time_range_end=args.end,
