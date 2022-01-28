@@ -70,7 +70,7 @@ def get_args() -> argparse.Namespace:
                         default=os.getenv('WORKSPACE_ID'))
     parser.add_argument('-u', '--url', type=str, help='GraphQL API URL',
                         default=os.getenv('GRAPHQL_URL', GRAPHQL_URL))
-    parser.add_argument('-f', '--fields', type=str,
+    parser.add_argument('-f', '--fields', type=json_str,
                         help='Fields to select (JSON list)',
                         default=os.getenv('FIELDS', FIELDS))
     parser.add_argument('-t', '--token', type=str,
@@ -91,7 +91,7 @@ def get_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def validate_json(data: str):
+def json_str(data: str):
     json.loads(data)
     return data
 
@@ -123,7 +123,7 @@ def main():
     vent.workflow.run(
         workspace_id=args.workspace_id,
         url=args.url,
-        fields=validate_json(args.fields),
+        fields=args.fields,
         token=token,
         time_range_start=args.start,
         time_range_end=args.end,
